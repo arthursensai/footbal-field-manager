@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { dayRangeUtc } from "@/lib/datetime";
+import { dayRangeUtc, localToUtc } from "@/lib/datetime";
 import type { AuditLog, Booking, DailySummaryData } from "@/types/booking";
 
 function normalize(row: Booking): Booking {
@@ -17,6 +17,27 @@ export async function getBookingsForDay(supabase: SupabaseClient, date: string):
   if (error) {
     console.error("getBookingsForDay", error);
     throw new Error("Échec du chargement des réservations.");
+  }
+  return ((data ?? []) as Booking[]).map(normalize);
+}
+
+/** Charge les réservations qui chevauchent le mois affiché, en heure locale du Maroc. */
+export async function getBookingsForMonth(supabase: SupabaseClient, date: string): Promise<Booking[]> {
+  const [year, month] = date.split("-").map(Number);
+  const firstDay = `${year}-${String(month).padStart(2, "0")}-01`;
+  const nextMonth = new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
+  const start = localToUtc(firstDay, "00:00");
+  const end = localToUtc(nextMonth, "00:00");
+
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("*")
+    .lt("start_time", end.toISOString())
+    .gt("end_time", start.toISOString())
+    .order("start_time", { ascending: true });
+  if (error) {
+    console.error("getBookingsForMonth", error);
+    throw new Error("Échec du chargement du calendrier mensuel.");
   }
   return ((data ?? []) as Booking[]).map(normalize);
 }
