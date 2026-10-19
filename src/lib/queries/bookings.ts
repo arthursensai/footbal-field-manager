@@ -2,10 +2,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { dayRangeUtc, localToUtc } from "@/lib/datetime";
 import type { AuditLog, Booking, DailySummaryData } from "@/types/booking";
 
-function normalize(row: Booking): Booking {
-  return { ...row, total_price: Number(row.total_price), paid_amount: Number(row.paid_amount) };
-}
-
 export async function getBookingsForDay(supabase: SupabaseClient, date: string): Promise<Booking[]> {
   const { start, end } = dayRangeUtc(date);
   const { data, error } = await supabase
@@ -18,7 +14,7 @@ export async function getBookingsForDay(supabase: SupabaseClient, date: string):
     console.error("getBookingsForDay", error);
     throw new Error("Échec du chargement des réservations.");
   }
-  return ((data ?? []) as Booking[]).map(normalize);
+  return (data ?? []) as Booking[];
 }
 
 /** Charge les réservations qui chevauchent le mois affiché, en heure locale du Maroc. */
@@ -39,7 +35,7 @@ export async function getBookingsForMonth(supabase: SupabaseClient, date: string
     console.error("getBookingsForMonth", error);
     throw new Error("Échec du chargement du calendrier mensuel.");
   }
-  return ((data ?? []) as Booking[]).map(normalize);
+  return (data ?? []) as Booking[];
 }
 
 export async function getDailySummary(supabase: SupabaseClient, date: string): Promise<DailySummaryData> {
@@ -54,9 +50,6 @@ export async function getDailySummary(supabase: SupabaseClient, date: string): P
     confirmed_count: Number(row.confirmed_count),
     cancelled_count: Number(row.cancelled_count),
     total_minutes: Number(row.total_minutes),
-    expected_revenue: Number(row.expected_revenue),
-    collected_amount: Number(row.collected_amount),
-    remaining_amount: Number(row.remaining_amount),
   };
 }
 

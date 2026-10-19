@@ -62,7 +62,6 @@ export function BookingDialog({ state, loadedDate, loadedBookings, onClose, onSa
           loadedBookings={loadedBookings}
           booking={booking}
           defaultStart={state.mode === "create" ? state.start : undefined}
-          defaultEnd={state.mode === "create" ? state.end : undefined}
           onSaved={onSaved}
           onClose={onClose}
         />

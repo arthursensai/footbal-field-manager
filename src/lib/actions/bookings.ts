@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { localToUtc } from "@/lib/datetime";
 import { createClient } from "@/lib/supabase/server";
-import { bookingFormSchema } from "@/lib/validation/booking";
+import { BOOKING_MINUTES, bookingFormSchema } from "@/lib/validation/booking";
 import type { ActionResult } from "@/types/booking";
 
 interface DbError {
@@ -15,7 +15,7 @@ interface DbError {
 function mapDbError(error: DbError, fallback: string): string {
   console.error("Erreur base de données", error.code, error.message);
   if (error.code === "23P01") return "Ce créneau est déjà réservé par une autre réservation confirmée. Choisissez un autre horaire.";
-  if (error.code === "23514") return "Les données ne respectent pas les règles de réservation (horaires, montants).";
+  if (error.code === "23514") return "Les données ne respectent pas les règles de réservation (horaires).";
   if (error.code === "42501") return "Action non autorisée avec ce compte.";
   if (error.code === "PGRST301" || error.code === "PGRST303" || /jwt/i.test(error.message ?? "")) {
     return "Votre session a expiré. Reconnectez-vous.";
@@ -44,12 +44,9 @@ export async function saveBooking(id: string | null, input: unknown): Promise<Ac
   const v = parsed.data;
   const payload = {
     customer_name: v.customerName,
-    phone: v.phone,
+    phone: v.phone === "" ? null : v.phone,
     start_time: localToUtc(v.date, v.startTime).toISOString(),
-    end_time: localToUtc(v.date, v.endTime).toISOString(),
-    total_price: v.totalPrice,
-    paid_amount: v.paidAmount,
-    notes: v.notes.trim() === "" ? null : v.notes.trim(),
+    end_time: new Date(localToUtc(v.date, v.startTime).getTime() + BOOKING_MINUTES * 60_000).toISOString(),
   };
 
   if (id === null) {

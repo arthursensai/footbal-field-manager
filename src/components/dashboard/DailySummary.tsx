@@ -1,4 +1,4 @@
-import { formatDuration, formatMAD } from "@/lib/format";
+import { formatDuration } from "@/lib/format";
 import type { DailySummaryData } from "@/types/booking";
 
 function Stat({ label, value, tone = "" }: { label: string; value: string; tone?: string }) {
@@ -20,17 +20,11 @@ export function DailySummary({ summary }: { summary: DailySummaryData }) {
         <Stat label="Réservations confirmées" value={String(summary.confirmed_count)} />
         <Stat label="Réservations annulées" value={String(summary.cancelled_count)} tone="text-slate-500" />
         <Stat label="Durée totale réservée" value={formatDuration(summary.total_minutes)} />
-        <Stat label="Chiffre d'affaires prévu" value={formatMAD(summary.expected_revenue)} />
-        <Stat label="Montant encaissé" value={formatMAD(summary.collected_amount)} tone="text-emerald-700" />
-        <Stat label="Reste à encaisser" value={formatMAD(summary.remaining_amount)} tone="text-amber-700" />
       </dl>
       <details className="text-xs text-slate-600">
         <summary className="cursor-pointer">Définition des indicateurs</summary>
         <ul className="mt-1 list-disc space-y-1 pl-5">
-          <li>Chiffre d'affaires prévu : somme des prix totaux des réservations confirmées du jour (argent attendu, pas forcément reçu).</li>
-          <li>Montant encaissé : somme des montants déjà payés sur ces mêmes réservations.</li>
-          <li>Reste à encaisser : prix totaux moins montants payés (= prévu − encaissé).</li>
-          <li>Les réservations annulées sont comptées à part et exclues de tous les montants et de la durée.</li>
+          <li>Les réservations annulées sont comptées à part et exclues de la durée.</li>
           <li>Les réservations sont rattachées au jour local (Africa/Casablanca) de leur heure de début.</li>
         </ul>
       </details>

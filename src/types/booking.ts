@@ -3,13 +3,10 @@ export type BookingStatus = "confirmed" | "cancelled";
 export interface Booking {
   id: string;
   customer_name: string;
-  phone: string;
+  phone: string | null;
   start_time: string;
   end_time: string;
-  total_price: number;
-  paid_amount: number;
   status: BookingStatus;
-  notes: string | null;
   created_by: string;
   updated_by: string;
   created_at: string;
@@ -20,9 +17,6 @@ export interface DailySummaryData {
   confirmed_count: number;
   cancelled_count: number;
   total_minutes: number;
-  expected_revenue: number;
-  collected_amount: number;
-  remaining_amount: number;
 }
 
 export type AuditAction = "create" | "update" | "cancel";

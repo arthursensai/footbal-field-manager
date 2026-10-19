@@ -1,9 +1,3 @@
-const mad = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "MAD" });
-
-export function formatMAD(value: number): string {
-  return mad.format(value);
-}
-
 export function formatDuration(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;

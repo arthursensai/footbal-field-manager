@@ -1,6 +1,6 @@
 # Réservations du terrain de football
 
-Application web **privée** (Next.js App Router, TypeScript strict, Supabase Auth/PostgreSQL/Realtime, Tailwind CSS 3) pour deux responsables qui gèrent les réservations d'un seul terrain. Toute l'interface est en français. Fuseau : `Africa/Casablanca`, devise : MAD, horaires : 08:00–21:00.
+Application web **privée** (Next.js App Router, TypeScript strict, Supabase Auth/PostgreSQL/Realtime, Tailwind CSS 3) pour deux responsables qui gèrent les réservations d'un seul terrain. Toute l'interface est en français. Fuseau : `Africa/Casablanca`, horaires : 08:00–21:00, chaque réservation dure une heure.
 
 ## 1. Configuration Supabase
 
@@ -81,15 +81,12 @@ supabase/migrations           Schéma, RLS, triggers, fonction de résumé, Real
 
 Sécurité : `src/middleware.ts` redirige les visiteurs sans session ; `requireManager()` revérifie la session **et** le profil côté serveur dans le layout et chaque page ; les mutations passent par des Server Actions qui utilisent la session de l'utilisateur ; `created_by` / `updated_by` sont fixés par un trigger SQL via `auth.uid()` (jamais fournis par le client) ; l'historique n'a aucune politique d'écriture et est alimenté uniquement par trigger.
 
-Règles d'intégrité en base (la validation du formulaire n'est qu'un confort) : début < fin, 08:00–21:00 en heure locale, pas de passage de minuit, exclusion de chevauchement (`EXCLUDE USING gist`, intervalle `[début, fin[` → réservations consécutives autorisées) limitée aux réservations `confirmed`, `0 ≤ payé ≤ total`. Les conflits simultanés renvoient le code `23P01`, traduit en message français.
+Règles d'intégrité en base (la validation du formulaire n'est qu'un confort) : début < fin, 08:00–21:00 en heure locale, pas de passage de minuit, exclusion de chevauchement (`EXCLUDE USING gist`, intervalle `[début, fin[` → réservations consécutives autorisées) limitée aux réservations `confirmed`. `end_time` est calculé par un trigger (début + 1 h). Les conflits simultanés renvoient le code `23P01`, traduit en message français.
 
 ## 7. Indicateurs du résumé journalier
 
 Calculés par la fonction SQL `daily_summary(date)` sur le jour local, pour les réservations **confirmées** uniquement :
 
-- **Chiffre d'affaires prévu** : somme des prix totaux (argent attendu, pas forcément reçu).
-- **Montant encaissé** : somme des montants déjà payés.
-- **Reste à encaisser** : somme de (prix total − montant payé) = prévu − encaissé.
 - **Durée totale** : somme des durées confirmées. Les annulées sont seulement comptées à part.
 
 ## 8. Vérifications réellement exécutées

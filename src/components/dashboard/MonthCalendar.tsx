@@ -28,8 +28,6 @@ function moveMonth(date: string, delta: number) {
 
 function eventTone(booking: Booking) {
   if (booking.status === "cancelled") return "border-red-200 bg-red-100 text-red-800";
-  if (booking.paid_amount <= 0 && booking.total_price > 0) return "border-blue-200 bg-blue-100 text-blue-800";
-  if (booking.paid_amount < booking.total_price) return "border-amber-200 bg-amber-100 text-amber-900";
   return "border-emerald-200 bg-emerald-100 text-emerald-900";
 }
 
@@ -114,9 +112,7 @@ export function MonthCalendar({ date, bookings }: Props) {
       </div>
 
       <footer className="flex flex-wrap gap-x-4 gap-y-2 border-t border-slate-200 px-3 py-3 text-[11px] text-slate-600 sm:px-4 sm:text-xs">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" />Payée</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-amber-400" />Paiement partiel</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-blue-400" />Non payée</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" />Confirmée</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-red-400" />Annulée</span>
       </footer>
     </section>

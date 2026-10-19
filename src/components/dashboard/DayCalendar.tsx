@@ -2,7 +2,6 @@
 
 import type { Booking } from "@/types/booking";
 import { formatTime, minutesToTime, utcToLocal } from "@/lib/datetime";
-import { formatMAD } from "@/lib/format";
 import { computeGaps, gapLabel } from "@/lib/bookings";
 import { CLOSING_MINUTES, OPENING_MINUTES } from "@/lib/validation/booking";
 
@@ -67,7 +66,6 @@ export function DayCalendar({ date, bookings, now, onSelect, onCreate }: Props) 
             const past = now !== null && new Date(b.end_time).getTime() < now;
             const current = now !== null && new Date(b.start_time).getTime() <= now && now < new Date(b.end_time).getTime();
             const height = Math.max(y(e) - y(s) - 4, 28);
-            const remaining = b.total_price - b.paid_amount;
             const tone = past
               ? "border-slate-300 bg-slate-200 text-slate-500"
               : current
@@ -87,11 +85,6 @@ export function DayCalendar({ date, bookings, now, onSelect, onCreate }: Props) 
                   {formatTime(b.start_time)} – {formatTime(b.end_time)}
                   {past ? " · terminée" : current ? " · en cours" : ""}
                 </span>
-                {height >= 64 ? (
-                  <span className="block text-xs opacity-90">
-                    {remaining > 0 ? `Reste ${formatMAD(remaining)}` : "Payé en totalité"}
-                  </span>
-                ) : null}
               </button>
             );
           })}

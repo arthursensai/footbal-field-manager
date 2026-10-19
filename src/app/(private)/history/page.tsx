@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireManager } from "@/lib/auth";
 import { formatDateTime, isValidDate } from "@/lib/datetime";
-import { formatMAD } from "@/lib/format";
 import { getAuditLogs, isUuid } from "@/lib/queries/bookings";
 import type { AuditAction, AuditLog } from "@/types/booking";
 
@@ -13,20 +12,16 @@ const ACTION_LABELS: Record<AuditAction, { label: string; tone: string }> = {
   cancel: { label: "Annulation", tone: "bg-red-100 text-red-800" },
 };
 
-const FIELDS: { key: string; label: string; kind?: "money" | "datetime" }[] = [
+const FIELDS: { key: string; label: string; kind?: "datetime" }[] = [
   { key: "customer_name", label: "Client" },
   { key: "phone", label: "Téléphone" },
   { key: "start_time", label: "Début", kind: "datetime" },
   { key: "end_time", label: "Fin", kind: "datetime" },
-  { key: "total_price", label: "Prix total", kind: "money" },
-  { key: "paid_amount", label: "Montant payé", kind: "money" },
   { key: "status", label: "Statut" },
-  { key: "notes", label: "Notes" },
 ];
 
-function display(value: unknown, kind?: "money" | "datetime"): string {
+function display(value: unknown, kind?: "datetime"): string {
   if (value === null || value === undefined || value === "") return "—";
-  if (kind === "money") return formatMAD(Number(value));
   if (kind === "datetime") return formatDateTime(String(value));
   if (value === "confirmed") return "Confirmée";
   if (value === "cancelled") return "Annulée";
@@ -35,7 +30,7 @@ function display(value: unknown, kind?: "money" | "datetime"): string {
 
 function changes(log: AuditLog) {
   if (log.action === "create") {
-    return FIELDS.filter((f) => f.key !== "status" && f.key !== "notes").map((f) => ({
+    return FIELDS.filter((f) => f.key !== "status").map((f) => ({
       label: f.label,
       from: null as string | null,
       to: display(log.new_data?.[f.key], f.kind),
