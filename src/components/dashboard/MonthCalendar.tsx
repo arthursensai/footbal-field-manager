@@ -26,8 +26,7 @@ function moveMonth(date: string, delta: number) {
   return new Date(Date.UTC(year, month - 1 + delta, 1)).toISOString().slice(0, 10);
 }
 
-function eventTone(booking: Booking) {
-  if (booking.status === "cancelled") return "border-red-200 bg-red-100 text-red-800";
+function eventTone() {
   return "border-emerald-200 bg-emerald-100 text-emerald-900";
 }
 
@@ -42,6 +41,8 @@ export function MonthCalendar({ date, bookings }: Props) {
 
   const byDate = new Map<string, Booking[]>();
   for (const booking of bookings) {
+    if (booking.status !== "confirmed") continue;
+
     const localDate = utcToLocal(booking.start_time).date;
     const list = byDate.get(localDate) ?? [];
     list.push(booking);
@@ -74,8 +75,6 @@ export function MonthCalendar({ date, bookings }: Props) {
           const selected = day === date;
           const isToday = day === today;
           const dayBookings = byDate.get(day) ?? [];
-          const visibleBookings = dayBookings.slice(0, 2);
-          const extraCount = dayBookings.length - visibleBookings.length;
           const dayNumber = Number(day.slice(-2));
 
           return (
@@ -98,13 +97,12 @@ export function MonthCalendar({ date, bookings }: Props) {
                 ].join(" ")}>{dayNumber}</span>
               </span>
               <span className="block space-y-1">
-                {visibleBookings.map((booking) => (
-                  <span key={booking.id} className={`block truncate rounded border px-1 py-0.5 text-[9px] leading-3 sm:px-1.5 sm:py-1 sm:text-[11px] sm:leading-4 ${eventTone(booking)}`}>
-                    <span className="font-semibold">{booking.status === "cancelled" ? "× " : ""}{booking.customer_name}</span>
+                {dayBookings.map((booking) => (
+                  <span key={booking.id} className={`block truncate rounded border px-1 py-0.5 text-[9px] leading-3 sm:px-1.5 sm:py-1 sm:text-[11px] sm:leading-4 ${eventTone()}`}>
+                    <span className="font-semibold">{booking.customer_name}</span>
                     <span className="hidden sm:inline"> · {utcToLocal(booking.start_time).time}</span>
                   </span>
                 ))}
-                {extraCount > 0 ? <span className="block px-1 text-[10px] font-semibold text-slate-600 sm:text-xs">+{extraCount}</span> : null}
               </span>
             </button>
           );
@@ -112,8 +110,7 @@ export function MonthCalendar({ date, bookings }: Props) {
       </div>
 
       <footer className="flex flex-wrap gap-x-4 gap-y-2 border-t border-slate-200 px-3 py-3 text-[11px] text-slate-600 sm:px-4 sm:text-xs">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" />Confirmée</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-red-400" />Annulée</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" />Réservations confirmées</span>
       </footer>
     </section>
   );
