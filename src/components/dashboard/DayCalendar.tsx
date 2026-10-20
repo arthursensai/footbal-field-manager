@@ -61,8 +61,14 @@ export function DayCalendar({ date, bookings, now, onSelect, onCreate }: Props) 
           ))}
 
           {confirmed.map((b) => {
-            const s = utcToLocal(b.start_time).minutes;
-            const e = utcToLocal(b.end_time).minutes;
+	    const startLocal = utcToLocal(b.start_time);
+	    const endLocal = utcToLocal(b.end_time);
+
+	    const s = startLocal.minutes;
+	    const e =
+		      endLocal.date !== startLocal.date && endLocal.time === "00:00"
+	        ? CLOSING_MINUTES
+		    : endLocal.minutes;
             const past = now !== null && new Date(b.end_time).getTime() < now;
             const current = now !== null && new Date(b.start_time).getTime() <= now && now < new Date(b.end_time).getTime();
             const height = Math.max(y(e) - y(s) - 4, 28);

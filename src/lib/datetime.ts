@@ -47,7 +47,9 @@ export function utcToLocal(value: Date | string | number) {
 }
 
 export function minutesToTime(minutes: number): string {
-  return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
+	  if (minutes === 24 * 60) return "00:00";
+
+	    return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
 }
 
 export function addDays(date: string, n: number): string {

@@ -37,7 +37,7 @@ export function BookingsWorkspace({ date, bookings }: { date: string; bookings: 
     <section aria-labelledby="planning-titre" className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 id="planning-titre" className="text-base font-semibold">
-          Planning (08:00 – 21:00)
+          Planning (08:00 – 00:00)
         </h2>
         <Button onClick={() => setDialog({ mode: "create" })}>Nouvelle réservation</Button>
       </div>

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const OPENING_MINUTES = 8 * 60;
-export const CLOSING_MINUTES = 21 * 60;
+export const CLOSING_MINUTES = 24 * 60;
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -29,7 +29,7 @@ export const bookingFormSchema = z
         ctx.addIssue({ code: "custom", path: ["startTime"], message: "La réservation doit commencer à 08:00 ou après." });
       }
       if (s + BOOKING_MINUTES > CLOSING_MINUTES) {
-        ctx.addIssue({ code: "custom", path: ["startTime"], message: "La dernière réservation commence à 20:00 (durée fixe d'une heure)." });
+        ctx.addIssue({ code: "custom", path: ["startTime"], message: "La dernière réservation commence à 23:00 (durée fixe d'une heure)." });
       }
     }
   });
